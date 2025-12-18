@@ -1,80 +1,74 @@
 import numpy as np
-from dynamics.ode_solvers import position_rk4_step, attitude_rk4_step
-from maths.initial_conditions_conversions import (
-    orbital_elements_to_state_vectors,
-)
+import json
+from ..dynamics.ode_solvers import position_rk4_step, attitude_rk4_step
+
+
+"""
+Conventions:
+
+- Inertia tensor is in body frame
+- Position and velocity are in ECI frame
+- Quaternion represents rotation from ECI to body
+"""
 
 
 class Satellite:
-    def __init__(self, initial_conditions, properties):
-        # Initialize position and velocity
-        if initial_conditions["method"] == "orbital_elements":
-            print("Initializing state vectors from orbital elements...")
-            initial_position, initial_velocity = orbital_elements_to_state_vectors(
-                altitude_km=initial_conditions["altitude_km"],
-                inclination_deg=initial_conditions["inclination_deg"],
-            )
-            print(
-                f"  -> Calculated Initial Position (km): {np.round(initial_position, 2)}"
-            )
-            print(
-                f"  -> Calculated Initial Velocity (km/s): {np.round(initial_velocity, 2)}"
-            )
-        elif initial_conditions["method"] == "state_vectors":
-            print("Initializing state vectors directly from config.")
-            initial_position = np.array(initial_conditions["position_km"])
-            initial_velocity = np.array(initial_conditions["velocity_km_s"])
-        else:
-            raise ValueError(
-                f"Invalid initial condition method specified in config: '{initial_conditions['method']}'"
-            )
+    def __init__(self):
+        # altitude and velocity (ECI frame)
+        self.position = np.zeros(3)
+        self.velocity = np.zeros(3)
 
-        # Initialize attitude
-        initial_quaternion = np.array(initial_conditions["quaternion"])
-        initial_angular_velocity = np.array(
-            initial_conditions["angular_velocity_rad_s"]
-        )
+        # attitude variables
+        self.quaternion = np.array([1.0, 0.0, 0.0, 0.0])  # (ECI to body)
+        self.omega = np.zeros(3)  # rad/s (body frame)
 
-        # Set state vectors
-        self.translational = np.concatenate((initial_position, initial_velocity))  # 6D
-        self.rotational = np.concatenate(
-            (initial_quaternion, initial_angular_velocity)
-        )  # 7D
-        self.state = np.concatenate((self.translational, self.rotational))
-
-        # Set properties
-        self.J = np.array(properties["inertia_tensor"])
+        self.mass = 1.0
+        self.drag_coefficient = 2.2
+        self.J = np.diag([0.0027, 0.0027, 0.0054])
         self.J_inv = np.linalg.inv(self.J)
-        self.dimensions = np.array(properties["dimensions_m"])
 
-        if "mass_kg" not in properties:
-            raise KeyError("Satellite properties must include 'mass_kg'.")
-        self.mass = float(properties["mass_kg"])
-        self.drag_coefficient = properties.get("drag_coefficient", 2.2)
-        optical = properties.get("srp_optical", {})
-        self.srp_specular = optical.get("specular", 0.5)
-        self.srp_diffuse = optical.get("diffuse", 0.2)
+        # 3D structure (in body frame)
+        self.n = np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [-1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, -1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [0.0, 0.0, -1.0],
+            ]
+        )
+        self.A = np.array([0.01, 0.01, 0.01, 0.01, 0.1, 0.1])  # m^2
+        self.solarp_area = np.array([0.00, 0.00, 0.006, 0.006, 0.006, 0.006])  # m^2
+        self.drag_coefficient = 2.2  # TODO fix to actual value
+        self.time = 0.0
 
-        x, y, z = self.dimensions
-        self.face_areas = np.array([y * z, x * z, x * y])
+        # TODO antenna parameters
+        """
+        Define self.antenna_direction_body, self.antenna_beamwidth, self.antenna_gain
+        Gain distribution exactly how needs to be thought out
+        Can also do Data Rate calculations later
+        """
 
-    def update(self, t, dt):
-        self.translational = position_rk4_step(t, self, dt)
-        self.rotational = attitude_rk4_step(t, self, dt)
-        self.state = np.concatenate((self.translational, self.rotational))
+    def propagate(self, dt: float):
+        pos = position_rk4_step(self.time, self, dt)
+        att = attitude_rk4_step(self.time, self, dt)
 
-    @property
-    def position(self):
-        return self.state[:3]
+        self.position = pos[:3]
+        self.velocity = pos[3:6]
 
-    @property
-    def velocity(self):
-        return self.state[3:6]
+        self.quaternion = att[:4]
+        self.omega = att[4:]
 
-    @property
-    def quaternion(self):
-        return self.state[6:10]
+        self.time += dt
 
-    @property
-    def angular_velocity(self):
-        return self.state[10:13]
+    def load_from_file(self, fp):
+        """Load initial conditions from a json file"""
+        with open(fp, "r") as f:
+            data = json.load(f)
+
+        self.position = np.array(data["position"])
+        self.velocity = np.array(data["velocity"])
+        self.quaternion = np.array(data["quaternion"])
+        self.omega = np.array(data["angular_velocity"])
+        self.mass = data["mass"]

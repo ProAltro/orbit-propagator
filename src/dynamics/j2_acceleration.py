@@ -1,8 +1,8 @@
 import numpy as np
-from constants import J2, EARTH_RADIUS, EARTH_MU
+from ..constants import J2, EARTH_RADIUS, EARTH_MU
 
 
-def j2_accel(r_vec):
+def acc_j2(r_vec):
     x, y, z = r_vec
     r2 = x**2 + y**2 + z**2
     r = np.sqrt(r2)

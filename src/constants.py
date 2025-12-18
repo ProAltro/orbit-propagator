@@ -1,10 +1,9 @@
 import numpy as np
 
 J2 = 1.08262668e-3
-EARTH_RADIUS = 6378.0  # km
-R_EARTH = 6378.137  # km (equatorial radius)
+EARTH_RADIUS = 6378.137  # km (equatorial radius)
 EARTH_MU = 3.9860043543609598e05  # km³/s²
-OMEGA_EARTH = 7.2921159e-5  # rad/s
+OMEGA_EARTH = 7.2921151467064e-5  # rad/s
 
 SOLAR_FLUX = 1367.0  # W/m²
 SPEED_OF_LIGHT = 299_792_458.0  # m/s

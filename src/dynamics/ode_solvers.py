@@ -1,20 +1,26 @@
 import numpy as np
 
-from constants import EARTH_MU
-from dynamics.atmospheric_drag import drag_acceleration
-from dynamics.j2_acceleration import j2_accel
-from dynamics.solar_radiation_force import solar_radiation_force
-from maths.maths import Omega
+from ..constants import EARTH_MU
+from .atmospheric_drag import acc_drag
+from .j2_acceleration import acc_j2
+from .solar_radiation_force import solar_radiation_force
+from ..maths.maths import Omega
+
+
+# TODO Precision Improvements (Minor Impact)
+"""
+When passing sat to the intermediate rk4 steps, the SRP and Drag calculations might not be updated
+"""
 
 
 def position_ode(t, state, sat):
     r = state[:3]
     a_kepler = -EARTH_MU * r / np.linalg.norm(r) ** 3
-    a_j2 = j2_accel(r)
-    a_solar_radiation = solar_radiation_force(t, r, sat)
-    a_drag = drag_acceleration(r, state[3:6], sat)
+    a_j2 = acc_j2(r)
+    # a_solar_radiation = solar_radiation_force(t, r, sat)
+    a_drag = acc_drag(r, state[3:6], sat)
 
-    a = a_kepler + a_j2 + a_solar_radiation + a_drag
+    a = a_kepler + a_j2 + a_drag
     return np.concatenate((state[3:6], a))
 
 
@@ -22,7 +28,10 @@ def attitude_ode(t, state, sat):
     q = state[:4]
     w = state[4:]
     q_dot = 0.5 * Omega(w).dot(q)
+
+    # TODO External Torques (Gravity Gradient, Atmospheric, Solar Radiation)
     Torque = np.zeros(3)
+
     w_dot = sat.J_inv.dot(Torque - np.cross(w, np.dot(sat.J, w)))
     return np.concatenate([q_dot, w_dot])
 
@@ -37,11 +46,12 @@ def rk4_step(f, t, y, dt):
 
 def position_rk4_step(t, sat, dt):
     f = lambda t_, y_: position_ode(t_, y_, sat)
-    return rk4_step(f, t, sat.translational, dt)
+    y = np.concatenate((sat.position, sat.velocity))
+    return rk4_step(f, t, y, dt)
 
 
 def attitude_rk4_step(t, sat, dt):
     f = lambda t_, y_: attitude_ode(t_, y_, sat)
-    y_next = rk4_step(f, t, sat.rotational, dt)
-    y_next[:4] /= np.linalg.norm(y_next[:4])
-    return y_next
+    y = rk4_step(f, t, np.concatenate((sat.quaternion, sat.omega)), dt)
+    y[:4] /= np.linalg.norm(y[:4])
+    return y
