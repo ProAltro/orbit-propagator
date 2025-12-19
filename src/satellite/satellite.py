@@ -39,7 +39,7 @@ class Satellite:
             ]
         )
         self.A = np.array([0.01, 0.01, 0.01, 0.01, 0.1, 0.1])  # m^2
-        self.solarp_area = np.array([0.00, 0.00, 0.006, 0.006, 0.006, 0.006])  # m^2
+        self.solarp_area = np.array([0.006, 0.006, 0.006, 0.006, 0.006, 0.006])  # m^2
         self.drag_coefficient = 2.2  # TODO fix to actual value
         self.time = 0.0
 
