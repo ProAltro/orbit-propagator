@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 # Solar panel constants
 SOLAR_CONSTANT = 1361  # W/m^2 at 1 AU
-SOLAR_PANEL_EFFICIENCY = 0.3  # 30% efficiency
+SOLAR_PANEL_EFFICIENCY = 0.2  # 30% efficiency
 R_EARTH = 6371e3  # Earth radius in meters
 R_SUN = 696340e3  # Sun radius in meters
 

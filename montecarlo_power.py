@@ -4,7 +4,7 @@ from src.maths.quaternions import Quaternion
 import json
 
 SOLAR_CONSTANT = 1361
-SOLAR_PANEL_EFFICIENCY = 0.3
+SOLAR_PANEL_EFFICIENCY = 0.2
 R_EARTH = 6371.0
 R_SUN = 696340.0
 
