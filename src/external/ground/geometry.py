@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..constants import SPEED_OF_LIGHT
-from ..maths.maths import eci_to_ecef
+from ...constants import SPEED_OF_LIGHT
+from ...maths.frames import eci_to_ecef
 
 
 def elevation_azimuth_range(position_eci_km, ground_station, time_s):

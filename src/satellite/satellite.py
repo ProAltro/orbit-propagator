@@ -123,7 +123,7 @@ class Satellite:
         return default
 
     def propagate(self, dt: float):
-        from ..simulation.dynamic import DynamicSimulation
+        from ..simulation.dynamic_simulation import DynamicSimulation
 
         return DynamicSimulation(self, propagator=self.dynamics_model).step(dt)
 

@@ -1,7 +1,7 @@
 import numpy as np
 
 from .monitor import AnalysisMonitor
-from ..maths.maths import A_from_q
+from ..maths.rotations import A_from_q
 
 
 class SolarPowerMonitor(AnalysisMonitor):

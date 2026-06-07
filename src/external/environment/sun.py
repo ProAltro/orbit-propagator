@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..constants import JULIAN_DATE_J2000
+from ...constants import JULIAN_DATE_J2000
 
 
 def sun_direction_unit(

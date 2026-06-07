@@ -6,7 +6,7 @@ from src import Satellite
 from src.analysis.attitude import BodyAxisAlignmentMonitor
 from src.analysis.link_budget import beacon_optimizer, link_budget, lora_time_on_air
 from src.analysis.monitor import AnalysisMonitor
-from src.analysis.solarpower import SolarPowerMonitor
+from src.analysis.solar_power import SolarPowerMonitor
 from src.analysis.ttc import TtcContactMonitor, TtcLinkBudgetMonitor
 from src.dynamics.magnetic_torque import magnetorquer_torque_body
 from src.dynamics.providers import (
@@ -16,10 +16,10 @@ from src.dynamics.providers import (
 )
 from src.dynamics.solar_radiation_force import solar_radiation_acceleration
 from src.dynamics.state import DynamicsState
-from src.environment.magnetic import earth_magnetic_field_eci
-from src.environment.sun import sun_direction_unit
-from src.ground import GroundStation
-from src.maths.maths import ecef_to_eci, eci_to_ecef
+from src.external.environment.magnetic import earth_magnetic_field_eci
+from src.external.environment.sun import sun_direction_unit
+from src.external.ground import GroundStation
+from src.maths.frames import ecef_to_eci, eci_to_ecef
 from src.satellite.components.actuators import Magnetorquer
 from src.satellite.components.power import SolarPanelArray
 from src.satellite.components.surfaces import BodySurfaceModel

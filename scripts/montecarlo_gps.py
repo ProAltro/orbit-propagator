@@ -10,7 +10,7 @@ import numpy as np
 
 from src import Satellite
 from src.analysis.ttc import TtcContactMonitor
-from src.ground import GroundStation
+from src.external.ground import GroundStation
 from src.satellite.components.ttc import Antenna
 from src.constants import EARTH_MU, EARTH_RADIUS
 from src.simulation import CircularOrbit, PrescribedOrbitSimulation

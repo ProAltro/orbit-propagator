@@ -6,8 +6,8 @@ from ..constants import (
     SOLAR_FLUX,
     SPEED_OF_LIGHT,
 )
-from ..environment.sun import sun_direction_unit
-from ..maths.maths import A_from_q
+from ..external.environment.sun import sun_direction_unit
+from ..maths.rotations import A_from_q
 
 
 def is_cylindrical_eclipse(position_km, sun_direction_eci, earth_radius_km=EARTH_RADIUS):

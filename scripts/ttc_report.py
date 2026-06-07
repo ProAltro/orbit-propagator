@@ -10,7 +10,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.analysis.link_budget import beacon_optimizer, link_budget, lora_time_on_air
 from src.analysis.ttc import TtcLinkBudgetMonitor, summarize_passes
-from src.ground import GroundStation
+from src.external.ground import GroundStation
 from src import Satellite
 from src.satellite.components import Antenna, LoRaRadio
 from src.simulation import KeplerianCircularOrbit, PrescribedOrbitSimulation

@@ -2,8 +2,8 @@ import numpy as np
 
 from .link_budget import link_budget
 from .monitor import AnalysisMonitor
-from ..ground.geometry import doppler_shift_hz, elevation_azimuth_range
-from ..ground import GroundStation
+from ..external.ground.geometry import doppler_shift_hz, elevation_azimuth_range
+from ..external.ground import GroundStation
 
 
 class TtcContactMonitor(AnalysisMonitor):

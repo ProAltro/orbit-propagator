@@ -1,4 +1,4 @@
-from ..dynamics.ode_solvers import combined_rk4_step
+from ..dynamics.integrators import combined_rk4_step
 from ..dynamics.providers import DefaultDynamicsModel
 from .runner import SimulationRunner
 

@@ -77,12 +77,12 @@ The project is organized around a few core choices:
 - Monitors should not mutate spacecraft hardware or propagation state. Scenario overrides should be passed into calculation helpers or expressed as components.
 - Dynamics query components. Force and torque models should ask the satellite what hardware it has instead of assuming every satellite has the same surfaces, wheels, thrusters, or panels.
 - Numeric seconds are the primary time model. Epoch metadata is optional and should only be used by environment models that need it.
-- Environment models are reusable services. Sun direction and magnetic field live in `src/environment`, not on `Satellite` or in scripts.
+- Environment models are reusable external-context services. Sun direction and magnetic field live in `src/external/environment`, not on `Satellite` or in scripts.
 - Simulation models advance state but do not decide what to analyze. Orbit models should update `Satellite`; monitors decide what values to record.
 - Simulation runners own loops and monitor sampling. Scripts should use `DynamicSimulation` or `PrescribedOrbitSimulation` instead of hand-written propagation loops.
 - Dynamics are provider-based. New force/torque models should be added as providers, then registered with a dynamics model. Stateful providers should update actuator/controller state in a pre-step hook, while ODE evaluations should read the prepared force/torque state.
 - Generic math stays generic. Coordinate transforms and vector/quaternion helpers belong in `src/maths`, not in analysis modules.
-- Ground-side objects are separate from spacecraft hardware. A ground station is not a satellite component, so it lives under `src/ground`.
+- Ground-side objects are separate from spacecraft hardware. A ground station is not a satellite component, so it lives under `src/external/ground`.
 - Scripts are experiments, not libraries. Scripts should configure and run scenarios, while reusable physics, geometry, components, and analyses live in `src`.
 - Units should be visible from names/comments whenever they are not the project default. For example, orbit distances are `km`, but component areas are named `areas_m2`.
 
@@ -234,11 +234,13 @@ Dynamics are organized around providers:
 - Optional `prepare_step(...)` hooks for stateful controllers/actuators.
 - `DefaultDynamicsModel`: sums default providers for Kepler gravity, J2, drag, SRP, and magnetorquer torque.
 
-Use a custom dynamics model when a scenario needs to disable or replace a provider. Do not add new imports directly to `ode_solvers.py` for each future force or torque.
+Use a custom dynamics model when a scenario needs to disable or replace a provider. Do not add new imports directly to the ODE/integration layer for each future force or torque.
 
-### Environment
+### External Context
 
-Environment models belong in `src/environment/`.
+External context models belong in `src/external/`.
+
+Environment models live in `src/external/environment/`.
 
 Current models:
 
@@ -246,6 +248,15 @@ Current models:
 - `earth_magnetic_field_eci(...)`: tilted-dipole magnetic field in tesla.
 
 Keep these independent of `Satellite`. Dynamics and monitors may pass `sat.position`, `sat.time`, and optional epoch metadata into environment functions.
+
+Ground-side, non-satellite objects live in `src/external/ground/`.
+
+Current ground object:
+
+- `GroundStation`: latitude, longitude, ECEF position, local vertical.
+- `ground.geometry`: elevation/azimuth/range and Doppler helpers.
+
+Ground stations are not satellite hardware and should not live in `src/satellite/components` or `src/analysis`.
 
 ### Math And Geometry
 
@@ -261,17 +272,6 @@ Current examples:
 - simple spherical geodetic conversion
 
 Frame conversion and reusable geometry should go here, unless it represents a real-world object.
-
-### Ground Objects
-
-Ground-side, non-satellite objects belong in `src/ground/`.
-
-Current object:
-
-- `GroundStation`: latitude, longitude, ECEF position, local vertical.
-- `ground.geometry`: elevation/azimuth/range and Doppler helpers.
-
-Ground stations are not satellite hardware and should not live in `src/satellite/components` or `src/analysis`.
 
 ### Utility Helpers
 
@@ -338,7 +338,7 @@ Add a new initial-condition generator:
 
 Add ground infrastructure:
 
-- Put ground stations and ground-side objects in `src/ground/`.
+- Put ground stations and ground-side objects in `src/external/ground/`.
 
 Add a new experiment:
 

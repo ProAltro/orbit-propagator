@@ -1,7 +1,7 @@
 import numpy as np
 
 from ..constants import EARTH_MU, EARTH_RADIUS
-from ..maths.maths import rot_x, rot_z
+from ..maths.rotations import rot_x, rot_z
 
 
 def keplerian_to_state_vectors(

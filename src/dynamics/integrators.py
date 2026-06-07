@@ -2,7 +2,7 @@ import numpy as np
 
 from .providers import DefaultDynamicsModel
 from .state import DynamicsState
-from ..maths.maths import Omega
+from ..maths.rotations import Omega
 
 
 def _resolve_model(dynamics_model=None):

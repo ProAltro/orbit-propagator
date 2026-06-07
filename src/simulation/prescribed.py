@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..maths.maths import Omega
+from ..maths.rotations import Omega
 from .runner import SimulationRunner
 
 

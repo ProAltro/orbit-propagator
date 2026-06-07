@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..constants import EARTH_RADIUS
-from ..maths.maths import ecef_to_eci
+from ...constants import EARTH_RADIUS
+from ...maths.frames import ecef_to_eci
 
 MAGNETIC_FIELD_EQUATOR_T = 3.12e-5
 MAG_POLE_LAT_DEG = -80.65

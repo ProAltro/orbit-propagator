@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from src import Satellite
-from src.analysis.solarpower import SolarPowerMonitor
+from src.analysis.solar_power import SolarPowerMonitor
 from src.maths.quaternions import Quaternion
 from src.simulation import DynamicSimulation
 

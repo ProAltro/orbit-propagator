@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..environment.magnetic import earth_magnetic_field_eci
-from ..maths.maths import A_from_q
+from ..external.environment.magnetic import earth_magnetic_field_eci
+from ..maths.rotations import A_from_q
 from ..satellite.components.actuators import Magnetorquer
 
 

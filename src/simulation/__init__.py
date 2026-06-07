@@ -1,4 +1,4 @@
-from .dynamic import DynamicSimulation
+from .dynamic_simulation import DynamicSimulation
 from .keplerian import KeplerianCircularOrbit
 from .orbit import CircularOrbit, simulate_circular_orbit
 from .prescribed import PrescribedOrbitSimulation

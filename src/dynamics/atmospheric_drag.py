@@ -2,7 +2,7 @@ import numpy as np
 from pathlib import Path
 
 from ..constants import EARTH_RADIUS
-from ..maths.maths import A_from_q
+from ..maths.rotations import A_from_q
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "atmosphere.csv"
 TABLE = np.genfromtxt(DATA_PATH, delimiter=",", names=True)

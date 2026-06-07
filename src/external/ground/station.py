@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..constants import EARTH_RADIUS
-from ..maths.maths import ecef_to_eci, geodetic_to_ecef
+from ...constants import EARTH_RADIUS
+from ...maths.frames import ecef_to_eci, geodetic_to_ecef
 
 
 class GroundStation:

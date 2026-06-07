@@ -9,7 +9,7 @@ import numpy as np
 
 from src import Satellite
 from src.analysis.attitude import BodyAxisAlignmentMonitor
-from src.analysis.solarpower import SolarPowerMonitor
+from src.analysis.solar_power import SolarPowerMonitor
 from src.simulation import CircularOrbit, PrescribedOrbitSimulation
 from src.utils.initial_conditions import (
     generate_inclined_circular_orbit,
