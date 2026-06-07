@@ -10,7 +10,7 @@ import numpy as np
 from src import Satellite
 from src.analysis.attitude import BodyAxisAlignmentMonitor
 from src.analysis.solarpower import SolarPowerMonitor
-from src.simulation.orbit import CircularOrbit
+from src.simulation import CircularOrbit, PrescribedOrbitSimulation
 from src.utils.initial_conditions import (
     generate_inclined_circular_orbit,
     random_quaternion,
@@ -51,7 +51,7 @@ def run_power_case(
     sat_template.omega = initial_omega.copy()
 
     orbit = CircularOrbit.from_satellite(sat_template)
-    orbit.simulate(sat_template, total_time, dt)
+    PrescribedOrbitSimulation(sat_template, orbit).run(total_time, dt)
 
     powers = np.array(power_monitor.powers)
 

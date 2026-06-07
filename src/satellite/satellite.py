@@ -1,7 +1,8 @@
 import numpy as np
 import json
 
-from ..dynamics.ode_solvers import combined_rk4_step
+from ..constants import JULIAN_DATE_J2000
+from ..dynamics.providers import DefaultDynamicsModel
 from .components.power import SolarPanelArray
 from .components.surfaces import BodySurfaceModel
 
@@ -16,7 +17,7 @@ Conventions:
 
 
 class Satellite:
-    def __init__(self):
+    def __init__(self, install_default_components=True, dynamics_model=None):
         # altitude and velocity (ECI frame)
         self.position = np.zeros(3)
         self.velocity = np.zeros(3)
@@ -30,10 +31,16 @@ class Satellite:
         self.J_inv = np.linalg.inv(self.J)
 
         self.time = 0.0
+        self.epoch_julian_date = JULIAN_DATE_J2000
+        self.epoch_datetime = None
+        self.dynamics_model = (
+            dynamics_model if dynamics_model is not None else DefaultDynamicsModel()
+        )
         self.components = []
         self.monitors = []
-        self.add_component(BodySurfaceModel())
-        self.add_component(SolarPanelArray())
+        if install_default_components:
+            self.add_component(BodySurfaceModel())
+            self.add_component(SolarPanelArray())
 
         # TODO antenna parameters
         """
@@ -116,17 +123,9 @@ class Satellite:
         return default
 
     def propagate(self, dt: float):
-        state = combined_rk4_step(self.time, self, dt)
+        from ..simulation.dynamic import DynamicSimulation
 
-        self.position = state[:3]
-        self.velocity = state[3:6]
-        self.quaternion = state[6:10]
-        self.omega = state[10:]
-
-        self.time += dt
-
-        for monitor in self.monitors:
-            monitor.sample(self)
+        return DynamicSimulation(self, propagator=self.dynamics_model).step(dt)
 
     def load_from_file(self, fp):
         """Load initial conditions from a json file"""

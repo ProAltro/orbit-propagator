@@ -68,21 +68,13 @@ class SolarPowerMonitor(AnalysisMonitor):
             power = 0.0
         else:
             solar_panels = self._solar_panel_component(sat)
-            original_areas = solar_panels.areas_m2
-            original_efficiency = solar_panels.efficiency
-            if self.solar_panel_areas is not None:
-                solar_panels.areas_m2 = self.solar_panel_areas
-            if self.panel_efficiency is not None:
-                solar_panels.efficiency = self.panel_efficiency
-            try:
-                power = solar_panels.power_from_sun_body(
-                    sat,
-                    sun_dir_body,
-                    self.solar_constant,
-                )
-            finally:
-                solar_panels.areas_m2 = original_areas
-                solar_panels.efficiency = original_efficiency
+            power = solar_panels.power_from_sun_body(
+                sat,
+                sun_dir_body,
+                self.solar_constant,
+                areas_m2=self.solar_panel_areas,
+                efficiency=self.panel_efficiency,
+            )
 
         self.times.append(float(sat.time))
         self.powers.append(float(power))

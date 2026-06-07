@@ -24,8 +24,19 @@ class SolarPanelArray(Component):
         if self.areas_m2.shape != (len(surface_model.normals_body),):
             raise ValueError("solar panel areas must match surface normal length.")
 
-    def power_from_sun_body(self, sat, sun_dir_body, solar_constant):
+    def power_from_sun_body(
+        self,
+        sat,
+        sun_dir_body,
+        solar_constant,
+        areas_m2=None,
+        efficiency=None,
+    ):
         surface_model = sat.get_component(self.surface_model_name)
+        areas = self.areas_m2 if areas_m2 is None else np.asarray(areas_m2, dtype=float)
+        if areas.shape != self.areas_m2.shape:
+            raise ValueError("solar panel areas must match configured panel areas.")
+        panel_efficiency = self.efficiency if efficiency is None else float(efficiency)
         cos_angles = surface_model.normals_body @ sun_dir_body
         illuminated = np.maximum(cos_angles, 0.0)
-        return float(solar_constant * self.efficiency * np.sum(self.areas_m2 * illuminated))
+        return float(solar_constant * panel_efficiency * np.sum(areas * illuminated))

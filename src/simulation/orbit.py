@@ -1,7 +1,5 @@
 import numpy as np
 
-from ..maths.maths import Omega
-
 
 class CircularOrbit:
     def __init__(
@@ -33,33 +31,22 @@ class CircularOrbit:
             np.cos(theta) * self._r_hat + np.sin(theta) * self._v_hat
         )
 
+    def velocity_at(self, time_s):
+        theta = self.mean_motion_rad_s * time_s
+        return self.speed_km_s * (
+            -np.sin(theta) * self._r_hat + np.cos(theta) * self._v_hat
+        )
+
     @classmethod
     def from_satellite(cls, sat):
         return cls(sat.position, sat.velocity)
 
     def simulate(self, sat, total_time, dt):
-        q = np.asarray(sat.quaternion, dtype=float).copy()
-        omega = np.asarray(sat.omega, dtype=float).copy()
-        steps = int(total_time / dt)
+        from .prescribed import PrescribedOrbitSimulation
 
+        sat.position = self.initial_position.copy()
         sat.velocity = self.initial_velocity.copy()
-        sat.omega = omega.copy()
-
-        for step in range(steps):
-            t = step * dt
-            sat.position = self.position_at(t)
-
-            q_dot = 0.5 * Omega(omega) @ q
-            q = q + q_dot * dt
-            q = q / np.linalg.norm(q)
-
-            sat.quaternion = q.copy()
-            sat.time = t
-
-            for monitor in sat.monitors:
-                monitor.sample(sat)
-
-        return sat
+        return PrescribedOrbitSimulation(sat, self).run(total_time, dt)
 
 
 def simulate_circular_orbit(

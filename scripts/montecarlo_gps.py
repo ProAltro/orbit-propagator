@@ -13,7 +13,7 @@ from src.analysis.ttc import TtcContactMonitor
 from src.ground import GroundStation
 from src.satellite.components.ttc import Antenna
 from src.constants import EARTH_MU, EARTH_RADIUS
-from src.simulation.orbit import CircularOrbit
+from src.simulation import CircularOrbit, PrescribedOrbitSimulation
 from src.utils.initial_conditions import generate_inclined_circular_orbit
 
 GROUND_LAT_DEG = 28.3802
@@ -57,7 +57,7 @@ def contact_time_for_raan(raan_deg, ground_station, timespan_s=None, dt=None):
     sat.omega = np.zeros(3)
 
     orbit = CircularOrbit.from_satellite(sat)
-    orbit.simulate(sat, timespan_s, dt)
+    PrescribedOrbitSimulation(sat, orbit).run(timespan_s, dt)
     return contact.total_contact_time_s
 
 

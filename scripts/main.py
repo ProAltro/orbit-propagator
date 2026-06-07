@@ -12,6 +12,7 @@ from plotly.subplots import make_subplots
 from src import Satellite
 from src.analysis.solarpower import SolarPowerMonitor
 from src.maths.quaternions import Quaternion
+from src.simulation import DynamicSimulation
 
 
 sat = Satellite()
@@ -26,9 +27,10 @@ steps = int(total_time / dt)
 
 positions = []
 attitudes = []
+simulation = DynamicSimulation(sat)
 
 for step_idx in range(steps):
-    sat.propagate(dt)
+    simulation.step(dt)
     positions.append(sat.position.copy())
 
     q = Quaternion(*sat.quaternion)
